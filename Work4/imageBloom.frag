@@ -1,12 +1,3 @@
-//============================================================================
-// STUDENT NAME: Chen DongCan
-// NUS User ID.: t0922729
-// COMMENTS TO GRADER: 
-//
-//============================================================================
-
-// FRAGMENT SHADER
-
 #version 330 core
 
 uniform int PassNum;
