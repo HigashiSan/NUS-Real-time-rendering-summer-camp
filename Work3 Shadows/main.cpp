@@ -1,12 +1,3 @@
-//============================================================
-// STUDENT NAME: Chen DongCan
-// NUS User ID.: t0922729
-// COMMENTS TO GRADER: 
-//
-// ============================================================
-
-// APPLICATION PROGRAM
-
 #include <cstdlib>
 #include <cstdio>
 using namespace std;
@@ -33,26 +24,19 @@ using namespace std;
 #include "helper/vboplane.h"
 #include "helper/vbotorus.h"
 
-
-// Shaders' filenames.
 const char vertShaderFile[] = "shader.vert";
 const char fragShaderFile[] = "shader.frag";
 
 GLSLProgram shaderProg;  // Contains the shader program object.
 
 
-// Light info. Must be a point light.
-glm::vec3 lightPosition;                                     // In world space.
-const glm::vec3 lightLookAt = glm::vec3(0.0f, 1.5f, 0.0f);   // In world space.
-const glm::vec3 lightUpVector = glm::vec3(0.0f, 1.0f, 0.0f); // In world space.
-const float lightVerticalFOV = 30.0f;                        // Vertical FOV in degrees.
+glm::vec3 lightPosition;                                     
+const glm::vec3 lightLookAt = glm::vec3(0.0f, 1.5f, 0.0f);   
+const glm::vec3 lightUpVector = glm::vec3(0.0f, 1.0f, 0.0f); 
+const float lightVerticalFOV = 30.0f;                 
 
 const glm::vec3 lightAmbient  = glm::vec3(0.2f, 0.2f, 0.2f);
-//const glm::vec3 lightDiffuse  = glm::vec3(1.0f, 1.0f, 1.0f); // Not used.
-//const glm::vec3 lightSpecular = glm::vec3(1.0f, 1.0f, 1.0f); // Not used.
 
-
-// 3D object models.
 const int numObjects = 4;
 Drawable *objModel[numObjects];
 
@@ -76,9 +60,6 @@ int winHeight = 600;    // Window height in pixels.
 
 bool wireframeMode = false;
 
-
-// For orbiting the light position around its "look-at" point.
-// Use keyboard to move light position.
 const float init_lightDist = 11.0f;       // Distance from ligth's "look-at" point.
 const float init_lightLatitude = 18.5f;   // In degrees.
 const float init_lightLongitude = 197.0f; // In degrees.
@@ -101,19 +82,12 @@ float cam_eye[3], cam_lookat[3], cam_up[3];
 const float initial_cam_eye[3] = { 0.0f, 5.0f, 8.0f };     // World coordinates.
 const float initial_cam_lookat[3] = { 0.0f, 0.0f, 0.0f };  // World coordinates.
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Set up texture maps from image files.
-/////////////////////////////////////////////////////////////////////////////
 static void SetUpTextureMapsFromFiles(void)
 {
     const int numTexMaps = 1;
     const GLenum texUnit[numTexMaps] = { GL_TEXTURE1 };
     const char *texMapFile[numTexMaps] = { "images/flower2.jpg" };
 
-    // Enable fliping of images vertically when read in.
-    // This is to follow OpenGL's image coordinate system, i.e. bottom-leftmost is (0, 0).
     stbi_set_flip_vertically_on_load(true);
 
     // Read texture images from files.
@@ -157,27 +131,12 @@ static void SetUpTextureMapsFromFiles(void)
     }
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Set up FBO and attach shadowmap to it.
-/////////////////////////////////////////////////////////////////////////////
 static void SetUpShadowMapAndFBO(void)
 {
     const GLenum texUnit = GL_TEXTURE0;
     const GLint texInternalFormat = GL_DEPTH_COMPONENT32F;
     const GLenum attachPoint = GL_DEPTH_ATTACHMENT;
 
-    /////////////////////////////////////////////////////////////////////////////
-    // TASK 2:
-    // Set up a texture object for the shadowmap, and attach it to a FBO.
-    // Refer to the lecture slides.
-    /////////////////////////////////////////////////////////////////////////////
-
-    // const GLfloat texBorder[] = { ??? }; // Fill in correct border values.
-
-    ///////////////////////////////////
-    // TASK 2: WRITE YOUR CODE HERE. //
     GLfloat texBorder[] = { 1.0f,1.0f,0.0f,0.0f };
     glGenFramebuffers(1, &fboHandle);
 
@@ -200,15 +159,9 @@ static void SetUpShadowMapAndFBO(void)
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    ///////////////////////////////////
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// Compute the light source 3D position from its direction and distance
-// from its "look-at" point
-/////////////////////////////////////////////////////////////////////////////
 static void ComputeLightPosition(void)
 {
     glm::mat4 xformMat = glm::mat4(1.0f);
@@ -218,11 +171,6 @@ static void ComputeLightPosition(void)
     lightPosition = xformMat * glm::vec4(lightDist, 0.0f, 0.0f, 1.0f);
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// The init function. It initializes some OpenGL states.
-/////////////////////////////////////////////////////////////////////////////
 static void MyInit(void)
 {
     try {
@@ -273,10 +221,6 @@ static void MyInit(void)
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// Draw the 3D objects.
-/////////////////////////////////////////////////////////////////////////////
 static void RenderObjects( const glm::mat4 &viewMat, const glm::mat4 &projMat )
 {
     {   // Draw the floor (-y) plane.
@@ -423,10 +367,6 @@ static void RenderObjects( const glm::mat4 &viewMat, const glm::mat4 &projMat )
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// Draw the shadowmap.
-/////////////////////////////////////////////////////////////////////////////
 static void RenderShadowMap(void)
 {
     // Bind to shadowmap's FBO.
@@ -441,15 +381,6 @@ static void RenderShadowMap(void)
     glm::mat4 viewMat = glm::lookAt(lightPosition, lightLookAt, lightUpVector);
 
     shaderProg.setUniform("RenderShadowMapMode", true);
-
-    /////////////////////////////////////////////////////////////////////////////
-    // TASK 3:
-    // * Render the scene into the shadowmap.
-    // * Compute shadowMatrix.
-    /////////////////////////////////////////////////////////////////////////////
-
-    ///////////////////////////////////
-    // TASK 3: WRITE YOUR CODE HERE. //
     
     glm::mat4 biasMatrix(
         0.5, 0.0, 0.0, 0.0,
@@ -464,35 +395,20 @@ static void RenderShadowMap(void)
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The draw function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyDrawFunc(void)
 {
     if (wireframeMode)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    //=======================================================================
-    // Render shadowmap to FBO.
-    //=======================================================================
     RenderShadowMap();
 
-    //=======================================================================
-    // Render to default framebuffer.
-    //=======================================================================
 
     // Unbind texture's FBO (back to default FB).
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, winWidth, winHeight); // Viewport for main window.
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //=======================================================================
-    // Set up View and Projection matrices, and draw the scene with shadows.
-    //=======================================================================
 
     // Perspective projection matrix.
     glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)winWidth / winHeight, 0.5f, 100.0f);
@@ -522,17 +438,10 @@ static void MyDrawFunc(void)
 
     shaderProg.setUniform("LightPosition", ecLightPosition);
     shaderProg.setUniform("LightAmbient", lightAmbient);
-    //shaderProg.setUniform("LightDiffuse", lightDiffuse);  // Not used.
-    //shaderProg.setUniform("LightSpecular", lightSpecular);  // Not used.
 
     RenderObjects( viewMat, projMat );
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// The reshape callback function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyReshapeFunc(GLFWwindow *window, int w, int h)
 {
     winWidth = w;
@@ -540,11 +449,6 @@ static void MyReshapeFunc(GLFWwindow *window, int w, int h)
     // glViewport(0, 0, w, h);
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// The keyboard callback function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyKeyboardFunc(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action == GLFW_PRESS || action == GLFW_REPEAT) {
@@ -611,10 +515,6 @@ static void MyKeyboardFunc(GLFWwindow* window, int key, int scancode, int action
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The mouse-click callback function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyMouseClickFunc(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
@@ -644,11 +544,6 @@ static void MyMouseClickFunc(GLFWwindow* window, int button, int action, int mod
     }
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// The mouse motion callback function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyMouseMotionFunc(GLFWwindow* window, double mouse_x, double mouse_y)
 {
     float rotScale = 1.0f;
@@ -693,11 +588,6 @@ static void WaitForEnterKeyBeforeExit(void)
     getchar();
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// The main function.
-/////////////////////////////////////////////////////////////////////////////
 int main( int argc, char** argv )
 {
     atexit(WaitForEnterKeyBeforeExit); // std::atexit() is declared in cstdlib
@@ -737,11 +627,6 @@ int main( int argc, char** argv )
     }
 
     printf( "Using GLEW %s.\n", glewGetString( GLEW_VERSION ) );
-
-    //if ( !GLEW_VERSION_3_3 ) {
-    //    fprintf( stderr, "Error: OpenGL 3.3 is not supported.\n" );
-    //    exit(EXIT_FAILURE);
-    //}
 #endif
 
     printf( "System supports OpenGL %s.\n", glGetString(GL_VERSION) );
