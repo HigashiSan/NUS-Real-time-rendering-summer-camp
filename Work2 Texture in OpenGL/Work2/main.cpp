@@ -1,18 +1,3 @@
-//============================================================================
-// GROUP NUMBER: 01
-//
-// STUDENT NAME: Chen DongCan
-// NUS User ID.: t0922729
-//
-// STUDENT NAME: Wu WenDi
-// NUS User ID.: t0922779
-//
-// COMMENTS TO GRADER: 
-//
-//============================================================================
-
-// APPLICATION PROGRAM
-
 #include <cstdlib>
 #include <cstdio>
 using namespace std;
@@ -81,12 +66,9 @@ bool mouseRightPressed;
 float cam_curr_quat[4];
 float cam_prev_quat[4];
 float cam_eye[3], cam_lookat[3], cam_up[3];
-const float initial_cam_pos[3] = { 0.0, 0.0, 3.0f };  // World coordinates.
+const float initial_cam_pos[3] = { 0.0, 0.0, 3.0f };  
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Set up the environment cubemap.
-/////////////////////////////////////////////////////////////////////////////
 static void SetupEnvMap(void) {
 
     const int numImages = 6;
@@ -117,11 +99,10 @@ static void SetupEnvMap(void) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     
-    // Enable fliping of images vertically when read in.
-    // This is to follow OpenGL's image coordinate system, i.e. bottom-leftmost is (0, 0).
+   
     stbi_set_flip_vertically_on_load(true);
 
-    // Read texture images from files.
+   
     for (int t = 0; t < numImages; t++) {
 
         int imgWidth, imgHeight, numComponents;
@@ -155,9 +136,6 @@ static void SetupEnvMap(void) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Set up all the texture maps to be used.
-/////////////////////////////////////////////////////////////////////////////
 static void SetupTextureMaps(void) {
 
     const int numTexMaps = 3;
@@ -170,11 +148,10 @@ static void SetupTextureMaps(void) {
     
     const GLenum texUnit[numTexMaps] = { GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3 };
     
-    // Enable fliping of images vertically when read in.
-    // This is to follow OpenGL's image coordinate system, i.e. bottom-leftmost is (0, 0).
+   
     stbi_set_flip_vertically_on_load(true);
 
-    // Read texture images from files.
+   
     for (int t = 0; t < numTexMaps; t++) {
 
         int imgWidth, imgHeight, numComponents;
@@ -216,10 +193,6 @@ static void SetupTextureMaps(void) {
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The init function. It initializes some OpenGL states.
-/////////////////////////////////////////////////////////////////////////////
 static void MyInit(void)
 {
     // Install shaders.
@@ -271,9 +244,6 @@ static void MyInit(void)
 
 
 
-/////////////////////////////////////////////////////////////////////////////
-// The draw function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyDrawFunc(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -283,19 +253,12 @@ static void MyDrawFunc(void)
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    //=======================================================================
-    // Pass texture unit numbers of texture maps to shaders.
-    //=======================================================================
-
     shaderProg.setUniform("EnvMap", 0);
     shaderProg.setUniform("BrickDiffuseMap", 1);
     shaderProg.setUniform("BrickNormalMap", 2);
     shaderProg.setUniform("WoodDiffuseMap", 3);
 
-    //=======================================================================
-    // Set up View and Projection matrices.
-    //=======================================================================
-
+ 
     // Perspective projection matrix. For M V
     glm::mat4 projMat = glm::perspective(glm::radians(60.0f), (float)winWidth / winHeight, 0.1f, 100.0f);
 
@@ -319,16 +282,7 @@ static void MyDrawFunc(void)
     // Set up transformations and draw the skybox.
     //=======================================================================
     {
-        // Actual final camera position in World coordinates.
         glm::vec3 camWorldPos = glm::transpose(glm::mat3(camRotMat)) * glm::vec3(cam_eye[0], cam_eye[1], cam_eye[2]);
-
-        /////////////////////////////////////////////////////////////////////////////
-        // TASK 1:
-        // Set up the Modelling Matrix modelMat0 for scaling the skybox cube to the
-        // size skyboxSize x skyboxSize x skyboxSize, and for positioning it at the
-        // correct position. Note that the skybox cube is initially a 1x1x1 cube
-        // centered at the origin.
-        /////////////////////////////////////////////////////////////////////////////
 
         glm::mat4 modelMat0 = glm::mat4(1.0f);
 
@@ -347,9 +301,7 @@ static void MyDrawFunc(void)
         skyboxModel->render();
     }
 
-    //=======================================================================
-    // Set up transformations and other uniform variables and draw the brick cube.
-    //=======================================================================
+   
     {
         // Translate it to the left side.
         glm::mat4 modelMat1 = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
@@ -386,9 +338,7 @@ static void MyDrawFunc(void)
         obj3DModel1->render();
     }
 
-    //=======================================================================
-    // Set up transformations and other uniform variables and draw the wooden cube.
-    //=======================================================================
+   
     {
         // Translate it to the right side.
         glm::mat4 modelMat2 = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -427,10 +377,6 @@ static void MyDrawFunc(void)
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The reshape callback function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyReshapeFunc(GLFWwindow *window, int w, int h)
 {
     winWidth = w;
@@ -440,9 +386,6 @@ static void MyReshapeFunc(GLFWwindow *window, int w, int h)
 
 
 
-/////////////////////////////////////////////////////////////////////////////
-// The keyboard callback function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyKeyboardFunc(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action == GLFW_PRESS || action == GLFW_REPEAT) {
@@ -492,10 +435,6 @@ static void MyKeyboardFunc(GLFWwindow* window, int key, int scancode, int action
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The mouse-click callback function.
-/////////////////////////////////////////////////////////////////////////////
 static void MyMouseClickFunc(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
