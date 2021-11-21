@@ -75,10 +75,6 @@ const GLfloat light1Specular[] = { 0.9, 0.9, 0.9, 1.0 };
 const GLfloat light1Position[] = { -1.0, 0.0, -0.5, 0.0 };
 
 
-/////////////////////////////////////////////////////////////////////////////
-// GLOBAL VARIABLES
-/////////////////////////////////////////////////////////////////////////////
-
 // Define the cars.
 typedef struct CarType {
     float bodyColor[3]; // RGB color of the car body.
@@ -115,14 +111,6 @@ bool drawWireframe = false;     // Draw polygons in wireframe if true, otherwise
 
 void UpdateCars();
 
-/////////////////////////////////////////////////////////////////////////////
-// Draw a car with its bottom on the z = 0 plane. The car is heading in the
-// +x direction and its top facing the +z direction.
-// The z-axis passes through the center of the car.
-// The car body is drawn using the input color, and its tyres are drawn
-// using the constant tyreColor.
-// The car has size CAR_LENGTH x CAR_WIDTH x CAR_HEIGHT.
-/////////////////////////////////////////////////////////////////////////////
 
 void DrawOneCar( float bodyColor[3] )
 {
@@ -181,14 +169,12 @@ void DrawOneCar( float bodyColor[3] )
 void DrawAllCars( void )
 {
     for ( int i = 0; i < NUM_CARS; i++ )
-    {
-        //****************************
+    {    
         glPushMatrix();
         
-        //Caculate the angle between the origin direction of the car's head and the vector in x-z plane
+       
         double yRotate_Angle = acos((double)car[i].xzAxis[1] / sqrt(car[i].xzAxis[1] * car[i].xzAxis[1] + car[i].xzAxis[0] * car[i].xzAxis[0]));
 
-        //Rotate the car's head to the vector's direction
         glRotatef(yRotate_Angle * 180 / PI, 0, 1, 0);
 
         //Rotate the car on the surface of the sphere
@@ -196,23 +182,15 @@ void DrawAllCars( void )
             0, 
             car[i].xzAxis[0] * sin(yRotate_Angle) + car[i].xzAxis[1] * cos(yRotate_Angle));
 
-        //Rotate the car by x
         glRotatef(car[i].angularPos, 1, 0, 0);
 
         glTranslated(0, PLANET_RADIUS + CAR_HEIGHT / 2, 0);
 
         DrawOneCar(car[i].bodyColor);
         glPopMatrix();
-        //****************************
     }
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Draw the x, y, z axes. Each is drawn with the input length.
-// The x-axis is red, y-axis green, and z-axis blue.
-/////////////////////////////////////////////////////////////////////////////
 
 void DrawAxes( double length )
 {
@@ -248,26 +226,12 @@ void MyDisplay( void )
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-
-    //***********************************************************************
-    // WRITE YOUR CODE HERE.
-
     gluPerspective(VERT_FOV, (double)winWidth / winHeight, eyeDistance - CLIP_PLANE_DIST, eyeDistance + CLIP_PLANE_DIST);
-
-    // Modify the following line of code to set up a perspective view
-    // frustum using gluPerspective(). The near and far planes should be set
-    // near the planet's surface, yet still do not clip off any part of the
-    // planet and cars. The near and far planes should vary with the eye's
-    // distance from the planet's center. You should make use of the value of
-    // the predefined constant CLIP_PLANE_DIST to position your near and
-    // far planes.
-    //***********************************************************************
 
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 
-    //***********************************************************************
-    // WRITE YOUR CODE HERE.
+    
     gluLookAt(
         //Camera position vector
         eyeDistance * cos(eyeLatitude / 180 * PI) * sin(eyeLongitude / 180 * PI), 
@@ -278,11 +242,7 @@ void MyDisplay( void )
         //Up vector
         0, 1.0, 0);
    
-    // Modify the following line of code to set up the view transformation.
-    // You may use the gluLookAt() function, but you can use other method.
-    //***********************************************************************
-
-
+   
     // Set world positions of the two lights.
     glLightfv( GL_LIGHT0, GL_POSITION, light0Position);
     glLightfv( GL_LIGHT1, GL_POSITION, light1Position);
@@ -304,11 +264,6 @@ void MyDisplay( void )
 
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Update each car's angular position on the great circle by
-// the angle increment.
-/////////////////////////////////////////////////////////////////////////////
-
 void UpdateCars( void )
 {
     for ( int i = 0; i < NUM_CARS; i++ )
@@ -319,12 +274,6 @@ void UpdateCars( void )
     glutPostRedisplay();
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Initializes each car with a random body color, a random rotation
-// increment (speed), a random anglular position, and a random great circle.
-/////////////////////////////////////////////////////////////////////////////
 
 void InitCars( void )
 {
@@ -352,11 +301,6 @@ void InitCars( void )
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The timer callback function.
-/////////////////////////////////////////////////////////////////////////////
-
 void MyTimer( int v )
 {
     //resume the car
@@ -383,11 +327,6 @@ void MyTimer( int v )
     }
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// The keyboard callback function.
-/////////////////////////////////////////////////////////////////////////////
 
 void MyKeyboard( unsigned char key, int x, int y )
 {
@@ -437,11 +376,6 @@ void MyKeyboard( unsigned char key, int x, int y )
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The special key callback function.
-/////////////////////////////////////////////////////////////////////////////
-
 void KeyCallback( int key, int x, int y )
 {
     switch ( key )
@@ -484,11 +418,6 @@ void KeyCallback( int key, int x, int y )
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The reshape callback function.
-/////////////////////////////////////////////////////////////////////////////
-
 void ViewRest( int w, int h )
 {
     winWidth = w;
@@ -497,23 +426,11 @@ void ViewRest( int w, int h )
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// The init function. It initializes some OpenGL states.
-/////////////////////////////////////////////////////////////////////////////
-
 void MyInit( void )
 {
     glClearColor( 0.0, 0.0, 0.0, 1.0 ); // Set black background color.
     glEnable( GL_DEPTH_TEST ); // Use depth-buffer for hidden surface removal.
     glShadeModel( GL_SMOOTH );
-
-    //=======================================================================
-    // The rest of the code below sets up the lighting and
-    // the material properties of all objects.
-    // You can just ignore this part.
-    //=======================================================================
-
     // Set Light 0.
     glLightfv( GL_LIGHT0, GL_AMBIENT, light0Ambient );
     glLightfv( GL_LIGHT0, GL_DIFFUSE, light0Diffuse );
@@ -553,11 +470,6 @@ static void WaitForEnterKeyBeforeExit(void)
     getchar();
 }
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// The main function.
-/////////////////////////////////////////////////////////////////////////////
 
 int main( int argc, char** argv )
 {
