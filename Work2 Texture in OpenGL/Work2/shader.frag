@@ -1,20 +1,4 @@
-//============================================================================
-// GROUP NUMBER: 01
-//
-// STUDENT NAME: Chen DongCan
-// NUS User ID.: t0922729
-//
-// STUDENT NAME: Wu WenDi
-// NUS User ID.: t0922779
-//
-// STUDENT NAME: 
-// NUS User ID.: 
-//
-// COMMENTS TO GRADER: 
-//
-//============================================================================
 
-// APPLICATION PROGRAM
 
 #version 330 core
 
@@ -66,72 +50,23 @@ const vec3 WoodSpecularMaterial = vec3(1.0, 1.0, 1.0);
 // Material shininess of specular reflection on the wood surface.
 const float WoodShininess = 128.0;
 
-//============================================================================
-// Environment cubemap used for skybox and reflection mapping.
-//============================================================================
+
 uniform samplerCube EnvMap;
-
-//============================================================================
-// The brick texture map whose color is used as the ambient and diffuse
-// material in the lighting computation.
-//============================================================================
 uniform sampler2D BrickDiffuseMap;
-
-//============================================================================
-// The brick normal map whose color is used as perturbed normal vector
-// in the tangent space.
-//============================================================================
 uniform sampler2D BrickNormalMap;
-
-//============================================================================
-// The wood texture map whose color is used as the ambient and diffuse
-// material in the lighting computation.
-//============================================================================
 uniform sampler2D WoodDiffuseMap;
-
-//============================================================================
-// MirrorTileDensity defines the number of hemispherical mirrors across each
-// dimension when the corresponding texture coordinate ranges from 0.0 to 1.0.
-//============================================================================
 const float MirrorTileDensity = 2.0;  // (0.0, inf)
-
-//============================================================================
-// MirrorRadius is the radius of the hemispherical mirror in each tile.
-// The radius is relative to the tile size, which is considered to be 1.0 x 1.0.
-//============================================================================
 const float MirrorRadius = 0.4;  // (0.0, 0.5]
-
-//============================================================================
-// DeltaNormal_Z_Scale is used to exaggerate the height of bump when doing
-// normal mapping. The z component of the decoded perturbed normal vector
-// read from the normal map is multiplied by DeltaNormal_Z_Adj.
-//============================================================================
 const float DeltaNormal_Z_Scale = 1.0 / 5.0;
-
-//============================================================================
-// Output to color buffer.
-//============================================================================
 layout (location = 0) out vec4 FragColor;
 
-/////////////////////////////////////////////////////////////////////////////
-// Compute fragment color on skybox.
-/////////////////////////////////////////////////////////////////////////////
 void drawSkybox()
 {
     FragColor = texture(EnvMap, v2fTexCoord);
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// Compute the Tangent vector T and the Binormal vector B, given the
-// Normal vector N, a 3D position p, and 2D texture coordinates uv.
-// Note that T, B, N and p are all in the same coordinate space.
-/////////////////////////////////////////////////////////////////////////////
 void compute_tangent_vectors( vec3 N, vec3 p, vec2 uv, out vec3 T, out vec3 B )
 {
-    // Please refer to "Followup: Normal Mapping Without Precomputed Tangents" at
-    // http://www.thetenthplanet.de/archives/1180
-
-    // get edge vectors of the pixel triangle
     vec3 dp1 = dFdx( p );
     vec3 dp2 = dFdy( p );
     vec2 duv1 = dFdx( uv );
@@ -159,18 +94,9 @@ void drawBrickCube()
         else
             lightVec = normalize(LightPosition.xyz - ecPosition);
 
-        /////////////////////////////////////////////////////////////////////////////
-        // TASK 2:
-        // * Construct eye-space Tangent and Binormal vectors.
-        // * Read and decode tangent-space perturbation vector from normal map.
-        // * Transform perturbation vector to eye space.
-        // * Use eye-space perturbation vector as normal vector in lighting
-        //   computation using Phong Reflection Model.
-        // * Write computed fragment color to FragColor.
-        /////////////////////////////////////////////////////////////////////////////
+        
 
-        ///////////////////////////////////
-        // TASK 2: WRITE YOUR CODE HERE. //
+        
         vec3 tangent,bitangent;
         compute_tangent_vectors(necNormal,ecPosition,texCoord,tangent,bitangent);
         mat3 TBN = mat3(tangent,bitangent,necNormal);
@@ -196,10 +122,6 @@ void drawBrickCube()
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// Compute fragment color on wooden cube.
-/////////////////////////////////////////////////////////////////////////////
 void drawWoodenCube()
 {
     if (gl_FrontFacing) {
@@ -212,27 +134,7 @@ void drawWoodenCube()
         else
             lightVec = normalize(LightPosition.xyz - ecPosition);
 
-        /////////////////////////////////////////////////////////////////////////////
-        // TASK 3:
-        // * Determine whether fragment is in wood region or mirror region.
-        // * If fragment is in wood region,
-        //    -- Read from wood texture map.
-        //    -- Perform Phong lighting computation using the wood texture
-        //       color as the ambient and diffuse material.
-        //    -- Write computed fragment color to FragColor.
-        // * If fragment is in mirror region,
-        //    -- Construct eye-space Tangent and Binormal vectors.
-        //    -- Construct tangent-space perturbation vector for a
-        //       hemispherical bump.
-        //    -- Transform perturbation vector to eye space.
-        //    -- Reflect the view vector about the eye-space perturbation vector.
-        //    -- Transform reflection vector to World Space.
-        //    -- Use world-space reflection vector to access environment cubemap.
-        //    -- Write computed fragment color to FragColor.
-        /////////////////////////////////////////////////////////////////////////////
-
-        ///////////////////////////////////
-        // TASK 3: WRITE YOUR CODE HERE. //
+       
         vec3 color = texture(WoodDiffuseMap,texCoord).rgb;
         vec2 c = MirrorTileDensity * texCoord;
         vec2 p = fract(c) - vec2(0.5);
